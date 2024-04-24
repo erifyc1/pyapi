@@ -1,11 +1,8 @@
-# import json
+import json
 import os
-
-# import requests
-
+import requests
 from .AbstractTask import AbstractTask, TaskNames
-
-# from pkg.agent.tasks.lib import scenedetector
+from pkg.agent.tasks.lib import flashdetector
 
 
 class FlashDetection(AbstractTask):
@@ -19,37 +16,29 @@ class FlashDetection(AbstractTask):
         return video['video1']['path']
         # legacy: return os.path.join(DATA_DIRECTORY, '%s.mp4' % video['video1']['id'])
 
-    # def find_scenes(self, video_id, video, readonly):
-    #     # get file_path from video
-    #     # Note that because we're accessing the raw file, we're assuming that
-    #     # we're running on the same server and/or in the same file space
-    #     # TODO: process multiple videos?
-    #     file_path = self.get_file_path(video=video)
+    def detect_flashes(self, video_id, video):
 
-    #     # Call scenedetector.find_scenes, store scene data back in api
-    #     try:
-    #         self.logger.info(' [%s] SceneDetection getting scenes for %s...' % (video_id, file_path))
-    #         scenes, scenes_meta = scenedetector.find_scenes(video_path=file_path)
+        # get file_path from video
+        file_path = self.get_file_path(video=video)
 
-    #         # save found scenes to video in api
-    #         #self.logger.debug(' [%s] SceneDetection found scenes: %s' % (video_id, scenes))
-    #         if readonly:
-    #             self.logger.info(' [%s] SceneDetection running as READONLY.. scenes have not been saved' % (video_id))
-    #         else:
-    #             self.jwt = self.update_jwt()
-    #             resp = requests.post(url='%s/api/Task/UpdateSceneData?videoId=%s' % (self.target_host, video_id),
-    #                                  headers={'Content-Type': 'application/json', 'Authorization': 'Bearer %s' % self.jwt},
-    #                                  data=json.dumps({"Scenes": scenes, "ScenesMetadata": scenes_meta}))
+        # run flashdetector and store result 
+        try:
+            self.logger.info(' [%s] FlashDetection detecting flashes for %s...' % (video_id, file_path))
+            timestamps = flashdetector.detect_flashes(video_path=file_path, speed=1)
 
-    #             resp.raise_for_status()
-    #             #self.logger.debug(' [%s] SceneDetection successfully saved scenes: %s' % (video_id, scenes))
+            # save result to api
+            # self.jwt = self.update_jwt()
+            # resp = requests.post(url='%s/api/Task/UpdateSceneData?videoId=%s' % (self.target_host, video_id),
+            #                         headers={'Content-Type': 'application/json', 'Authorization': 'Bearer %s' % self.jwt},
+            #                         data=json.dumps({"Scenes": scenes, "ScenesMetadata": scenes_meta}))
 
-    #         return scenes
-    #     except Exception as e:
-    #         self.logger.error(
-    #             ' [%s] SceneDetection failed to detect scenes in videoId=%s: %s' % (
-    #                 video_id, file_path, str(e)))
-    #         return None
+            # resp.raise_for_status()
+            return timestamps
+        except Exception as e:
+            self.logger.error(
+                ' [%s] FlashDetection failed to detect flashing in videoId=%s: %s' % (
+                    video_id, file_path, str(e)))
+            return None
 
     # Message Body Format:
     #     {'Data': 'db2090f7-09f2-459a-84b9-96bd2f506f68',
@@ -64,7 +53,7 @@ class FlashDetection(AbstractTask):
 
         # fetch video metadata by id to get path
         video = self.get_video(video_id=video_id)
-        print(video)
+        # print(video)
 
         # short-circuit if we already have scene data
         # if not force and VIDEO_SCENEDATA_KEY in video and video[VIDEO_SCENEDATA_KEY]:
@@ -78,7 +67,7 @@ class FlashDetection(AbstractTask):
         # we're running on the same server and/or in the same file space
         # TODO: process multiple videos?
         file_path = self.get_file_path(video=video)
-        print(file_path)
+        # print(file_path)
 
         # Short-circuit if we can't find the file
         # fetch the file from server if not found (if DOWNLOAD_MISSING_VIDEOS=True)
@@ -94,7 +83,8 @@ class FlashDetection(AbstractTask):
                 self.logger.warning('Size mismatch on downloaded file: %s (%s bytes, but should be %s)' %
                                     (video_id, actual_size, expected_size))
 
-        # self.find_scenes(video_id, video, readonly)
+        # TODO: make sure this works
+        self.detect_flashes(video_id, video)
 
         # if video is None:
         #     self.logger.error(' [%s] SceneDetection FAILED to lookup videoId=%s' % (video_id, video_id))
