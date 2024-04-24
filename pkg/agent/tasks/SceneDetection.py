@@ -104,9 +104,9 @@ class SceneDetection(AbstractTask):
         self.logger.info(' [%s] SceneDetection complete!' % video_id)
 
         # Trigger TranscriptionTask (which will generate captions in various languages)
-        self.logger.info(' [%s] SceneDetection now triggering: PhraseHinter' % video_id)
+        self.logger.info(' [%s] SceneDetection now triggering: FlashDetection' % video_id)
         #body['Scenes'] = scenes  # json.dumps(scenes)
-        emitter.publish(routing_key='PhraseHinter', body=body)
+        emitter.publish(routing_key='FlashDetection', body=body)
 
         return
 

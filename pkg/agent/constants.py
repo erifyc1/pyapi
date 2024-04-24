@@ -6,6 +6,7 @@ from pkg.agent.tasks.SceneDetection import SceneDetection
 from pkg.agent.tasks.PhraseHinter import PhraseHinter
 from pkg.agent.tasks.AccessibleGlossary import AccessibleGlossary
 from pkg.agent.tasks.PythonCrawler import PythonCrawler
+from pkg.agent.tasks.FlashDetection import FlashDetection
 
 RABBITMQ_CALLBACKS = {
     'QueueAwaker': QueueAwaker().rabbitpy_callback,
@@ -13,5 +14,6 @@ RABBITMQ_CALLBACKS = {
     'SceneDetection': SceneDetection().rabbitpy_callback,
     'PhraseHinter': PhraseHinter().rabbitpy_callback,
     'AccessibleGlossary': AccessibleGlossary().rabbitpy_callback,
-    'PythonCrawler': PythonCrawler().rabbitpy_callback
+    'PythonCrawler': PythonCrawler().rabbitpy_callback,
+    'FlashDetection': FlashDetection().rabbitpy_callback
 }

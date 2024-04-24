@@ -1,0 +1,74 @@
+version: "3.4"
+
+services:
+  frontend:
+    image: classtranscribe/frontend:staging
+    # build: 
+    #  context: ../../FrontEnd
+    #  dockerfile: ./Dockerfile
+
+  api:
+    image: classtranscribe/api:staging
+    platform: linux/amd64
+    #build:
+    #  context: ../../WebAPI
+    #  target: publish
+    #  dockerfile: ./API.Dockerfile    
+    environment:
+      - LogEntityFrameworkSQL=true
+
+
+  taskengine:
+    image: classtranscribe/taskengine:staging
+    platform: linux/amd64
+    #build:
+    #  context: ../../WebAPI
+    #  target: publish
+    #  dockerfile: ./TaskEngine.Dockerfile
+
+  pythonrpcserver:
+    image: classtranscribe/pythonrpcserver:staging
+    platform: linux/amd64
+    #build:
+    #  context: ../../WebAPI
+    #  dockerfile: ./pythonrpcserver.Dockerfile
+      
+  scenedetection:  
+    image: classtranscribe/ct-python:staging
+    platform: linux/amd64
+    # build:
+    #  context: ./
+    #  dockerfile: ./Dockerfile
+    environment:
+      RABBITMQ_URI: 'amqp://stolker2%40illinois.edu:Test1234@rabbitmq:5672/%2f'
+
+  flashdetection:  
+    # image: classtranscribe/ct-python:staging
+    platform: linux/amd64
+    build:
+     context: ./
+     dockerfile: ./Dockerfile
+    environment:
+      RABBITMQ_URI: 'amqp://stolker2%40illinois.edu:Test1234@rabbitmq:5672/%2f'
+
+  phrasehinter:
+    image: classtranscribe/ct-python:staging
+    platform: linux/amd64
+    # No need to specify a build here; scene detection will build the image
+    environment:
+      RABBITMQ_URI: 'amqp://stolker2%40illinois.edu:Test1234@rabbitmq:5672/%2f'
+  
+  glossary:
+    image: classtranscribe/ct-python:staging
+    platform: linux/amd64
+    # No need to specify a build here; scene detection will build the image
+    environment:
+      RABBITMQ_URI: 'amqp://stolker2%40illinois.edu:Test1234@rabbitmq:5672/%2f'
+  
+  crawler:
+    image: classtranscribe/ct-python:staging
+    # No need to specify a build here; scene detection will build the image
+    environment:
+      RABBITMQ_URI: 'amqp://stolker2%40illinois.edu:Test1234@rabbitmq:5672/%2f'
+      
+

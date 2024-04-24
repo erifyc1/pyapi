@@ -29,6 +29,7 @@ class TaskNames(Enum):
     # ... Add new tasks here
     AccessibleGlossary = 'AccessibleGlossary'       # AccessibleGlossary
     PythonCrawler = 'PythonCrawler'                 # PythonCrawler
+    FlashDetection = 'FlashDetection'               # FlashDetection
 
 
 class AbstractTask(ABC):
